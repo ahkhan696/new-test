@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>food app</title>
+	<link rel="stylesheet" type="text/css" href="bootstrap.min.css" />
+	<style type="text/css">
+		#main{
+			height: 600px;
+			width: 100%;
+		}
+		#menu{
+			height: 100%;
+			width: 33%;
+			float: left;
+		}
+		#customer_detail{
+			height: 100%;
+			width: 25%;
+			float: left;
+		}
+		#preview{
+			height: 100%;
+			width: 41%;
+			float: left;
+		}
+	</style>
+	<script type="text/javascript" src="jquery.js"></script>
+	<script type="text/javascript" src="bootstrap.min.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			$("#customer_name").keyup(function(e){
+				$("#preview_customer_name").text($("#customer_name").val());
+			});
+			$("#customer_address").keyup(function(e){
+				$("#preview_customer_address").text($("#customer_address").val());
+			});
+			$("#customer_cell").keyup(function(e){
+				$("#preview_customer_cell").text($("#customer_cell").val());
+			});
+			$(".select_item").click(function(){
+				var price, id, quantity = undefined;
+				var parent = $(this).parent().parent();
+				price  = parseInt(parent.find(".item_price").attr("data-price"));
+				var name   = parent.find(".item_name").text();
+				id 	   = parent.find(".item_id").text();
+
+				if ($("#preview_item_" + id).length >= 1) {
+					var preview_item = $("#preview_item_"+id);
+					quantity  	 = parseInt(preview_item.find(".preview_item_quantity").text());
+					quantity++;
+					new_price 			 = quantity * price;
+					preview_item.find(".preview_item_quantity").text(quantity);
+					preview_item.find(".preview_item_price").attr("data-price", new_price).text("Rs." + new_price + "/=");
+				} else {
+					var new_preview_item  = "<tr id='preview_item_" + id + "' class='preview_item'>";
+					new_preview_item		 += "<td class='preview_item_name'>" + name + "</td>";
+					new_preview_item		 += "<td class='preview_item_quantity'>" + 1 + "</td>";
+					new_preview_item		 += "<td class='preview_item_price' data-price='" + price + "'>Rs." + price + "/=</td>";
+					new_preview_item 		 += "<td><button class='btn btn-warning preview_item_cancel'>Cancel Order</button></td>";
+					new_preview_item 		 += "</tr>";
+					$("#preview_items").append(new_preview_item);
+				}
+				var total  = 0;
+				
+				// calculating and show total price
+				$("#preview_items").find(".preview_item").each(function(index, item){
+					total += parseInt($(this).find(".preview_item_price").attr("data-price"));
+				});
+				$("#order_total").text(total);
+				//$(".select_item").removeeventlistener();
+
+				// canceling order
+					$(".preview_item_cancel").click(function(){
+						var parent_cancel   = $(this).parent().parent();
+						var quantity_cancel = parseInt($(".preview_item_quantity").text());
+						var price_cancel 	 = parseInt($(".preview_item_price").attr("data-price"));
+						var single_price   = price_cancel / quantity_cancel;
+							
+						if (quantity_cancel == 1) {
+							alert();
+							parent_cancel.remove();
+						} else {
+							console.log("sigle"+single_price);
+							var new_price_c 	 = price_cancel - single_price;
+							quantity_cancel--;
+							$(".preview_item_price").attr("data-price", new_price_c).text("Rs." + new_price_c + "/=");
+							$(".preview_item_quantity").text(quantity_cancel);
+						}
+
+						var total_after_cancel 		= parseInt($("#order_total").text());
+						var new_total = total_after_cancel - single_price;
+						console.log(new_total);
+						$("#order_total").text(new_total);
+						$(".preview_item_cancel").removeeventlistener();
+				});	
+			});
+
+			
+			
+
+		});
+	</script>
+</head>
+<body>
+	<center><h1>food application</h1></center>
+	<div id="main">
+		<div id="menu" style="padding:10px;">
+			<center><h4>Item Menu</h4></center>
+			<hr />
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<td>#</td>
+						<td>Name</td>
+						<td>Price</td>
+						<td>Action</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr class="item_menu">
+						<td class="item_id">1</td>
+						<td class="item_name">Chicken Karhaei</td>
+						<td class="item_price" data-price="800">Rs. 800/=</td>
+						<td><button class="btn btn-success select_item">Select</button></td>
+					</tr>
+					<tr class="item_menu">
+						<td class="item_id">2</td>
+						<td class="item_name">Mutton Karhaei</td>
+						<td class="item_price" data-price="1100">Rs. 1100/=</td>
+						<td><button class="btn btn-success select_item">Select</button></td>
+					</tr>
+					<tr class="item_menu">
+						<td class="item_id">3</td>
+						<td class="item_name">Chicken Tikka</td>
+						<td class="item_price" data-price="300">Rs. 200/=</td>
+						<td><button class="btn btn-success select_item">Select</button></td>
+					</tr>
+					<tr class="item_menu">
+						<td class="item_id">4</td>
+						<td class="item_name">Daal Mash</td>
+						<td class="item_price" data-price="80">Rs. 80/=</td>
+						<td><button class="btn btn-success select_item">Select</button></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div id="customer_detail" style="padding:10px">
+			<div class="container" style="width:100%;">
+				<center>
+					<h4>Customer Details</h4>
+					<hr />
+				</center>
+				<form class="form-inline" style="text-align:center;">
+					<fieldset>
+						<div class="control-group">
+							<div class="controls">
+								<label class="control-label">Name: </label>
+								<br />
+								<input type="text" name="customer_name" id="customer_name" value="" />
+							</div>
+						</div>
+
+						<br />
+						<div class="control-group">
+							<div class="controls">
+								<label class="control-label">Address: </label>
+								<br />
+								<textarea rows="08" cols="20" name="customer_address" id="customer_address" value=""></textarea>
+							</div>
+						</div>
+						<br />
+						<div class="control-group">
+							<div class="controls">
+								<label class="control-label">Cell #: </label>
+								<br />
+								<input type="text" name="customer_cell" id="customer_cell" value="" />
+							</div>
+						</div>
+					</fieldset>
+				</form>
+			</div>
+		</div>
+		<div id="preview" style="padding:10px;">
+			<center>
+				<h4>Preview Order</h4>
+				<hr />
+			</center>
+
+			<div>
+				<strong>Name:</strong><span id="preview_customer_name"></span><br>
+				<strong>Address:</strong><span id="preview_customer_address"></span><br>
+				<strong>Cell:</strong><span id="preview_customer_cell"></span><br>
+			</div>
+
+			<table class="table table-striped" id="preview_items">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Quantity</th>
+						<th>Price</th>
+						<th>Cencel Order</th>
+					</tr>
+				</thead>
+			</table>
+
+			<div>
+				<strong>Order Total: Rs.</strong><span id="order_total">0</span>/=
+			</div>
+
+		</div>
+	</div>
+</body>
+</html>
